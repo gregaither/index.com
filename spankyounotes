@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spank You Notes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .spank-badge {
+      background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+  <!-- Header / Navigation -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl spank-badge flex items-center justify-center font-black text-xl shadow-lg shadow-rose-900/30">
+          👋
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold tracking-tight text-white">Spank You Notes</h1>
+          <p class="text-xs text-rose-400 font-medium">Public Roasts & Leaderboard</p>
+        </div>
+      </div>
+      <button onclick="openModal()" class="spank-badge hover:opacity-90 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-all transform active:scale-95">
+        + Send a Spank Note
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-5xl mx-auto px-4 py-8">
+
+    <!-- Hero / Intro -->
+    <div class="text-center mb-8">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-2">Send a note. Rank the response.</h2>
+      <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
+        Vote on public roasts and message famous figures, politicians, or friends. The most viral notes rise to the top.
+      </p>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="flex items-center justify-center gap-2 mb-8 overflow-x-auto pb-2">
+      <button onclick="filterCategory('All')" class="filter-btn bg-rose-600 text-white px-4 py-1.5 rounded-full text-xs font-semibold">All</button>
+      <button onclick="filterCategory('Politicians')" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-1.5 rounded-full text-xs font-semibold">Politicians</button>
+      <button onclick="filterCategory('Celebrities')" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-1.5 rounded-full text-xs font-semibold">Celebrities</button>
+      <button onclick="filterCategory('Tech CEOs')" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-1.5 rounded-full text-xs font-semibold">Tech CEOs</button>
+      <button onclick="filterCategory('Friends')" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-1.5 rounded-full text-xs font-semibold">Friends/Personal</button>
+    </div>
+
+    <!-- Feed / Leaderboard -->
+    <div id="notesFeed" class="space-y-4 max-w-3xl mx-auto">
+      <!-- Cards rendered dynamically via JS -->
+    </div>
+  </main>
+
+  <!-- Compose Note Modal -->
+  <div id="noteModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+      
+      <h3 class="text-xl font-bold text-white mb-1">Create a "Spank You" Note</h3>
+      <p class="text-xs text-slate-400 mb-6">Your note will be added to the public leaderboard for voting.</p>
+
+      <form id="noteForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Recipient Name</label>
+          <input type="text" id="recipientName" required placeholder="e.g. Elon Musk or Mark" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Category</label>
+            <select id="recipientCategory" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500">
+              <option value="Celebrities">Celebrities</option>
+              <option value="Politicians">Politicians</option>
+              <option value="Tech CEOs">Tech CEOs</option>
+              <option value="Friends">Friends/Personal</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Send Method</label>
+            <select id="sendMethod" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500">
+              <option value="Public Only">Public Board Only</option>
+              <option value="Email">Email</option>
+              <option value="SMS">SMS / Text</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Contact Details (Optional for real delivery)</label>
+          <input type="text" id="contactInfo" placeholder="Email address or phone number" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Note Content</label>
+          <textarea id="noteText" rows="3" required placeholder="Write your spank-worthy message..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end space-x-3 pt-2">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="spank-badge text-white px-5 py-2 rounded-lg font-bold text-sm hover:opacity-90">Send & Publish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Initial Sample Data
+    let notes = [
+      {
+        id: 1,
+        recipient: "Mark Zuckerberg",
+        category: "Tech CEOs",
+        message: "Thanks for making the Metaverse, now I have a place to sit in solitude virtually too.",
+        spanks: 342,
+        method: "Public Only",
+        author: "AnonDev"
+      },
+      {
+        id: 2,
+        recipient: "Local Mayor",
+        category: "Politicians",
+        message: "Spank you for fixing 1 out of the 47 potholes on Main Street. Huge progress!",
+        spanks: 215,
+        method: "Email",
+        author: "CommuterGuy"
+      },
+      {
+        id: 3,
+        recipient: "Dave (My Roommate)",
+        category: "Friends",
+        message: "Spank you for leaving dishes in the sink until they developed their own ecosystem.",
+        spanks: 89,
+        method: "SMS",
+        author: "CleanFreak"
+      }
+    ];
+
+    let currentCategory = "All";
+
+    // Render Notes Feed
+    function renderNotes() {
+      const feed = document.getElementById("notesFeed");
+      feed.innerHTML = "";
+
+      const filteredNotes = currentCategory === "All" 
+        ? notes 
+        : notes.filter(n => n.category === currentCategory);
+
+      // Sort by spank count descending
+      filteredNotes.sort((a, b) => b.spanks - a.spanks);
+
+      filteredNotes.forEach((note, index) => {
+        const card = document.createElement("div");
+        card.className = "bg-slate-800 border border-slate-700 rounded-xl p-5 flex items-start justify-between gap-4 shadow-sm hover:border-slate-600 transition-all";
+        
+        card.innerHTML = `
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">#${index + 1}</span>
+              <span class="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-md font-medium">${note.category}</span>
+              <span class="text-xs text-slate-500">• Via ${note.method}</span>
+            </div>
+            <h4 class="text-lg font-bold text-white mb-2">To: ${note.recipient}</h4>
+            <p class="text-slate-300 text-sm leading-relaxed mb-3">"${note.message}"</p>
+            <p class="text-xs text-slate-500">— Sent by ${note.author}</p>
+          </div>
+          
+          <!-- Voting Button -->
+          <button onclick="spankNote(${note.id})" class="flex flex-col items-center justify-center bg-slate-900 border border-slate-700 hover:border-rose-500 hover:bg-rose-950/30 p-3 rounded-xl min-w-[70px] transition-all group">
+            <span class="text-xl group-hover:scale-125 transition-transform">👋</span>
+            <span class="text-xs font-bold text-rose-400 mt-1">${note.spanks}</span>
+            <span class="text-[10px] text-slate-400 font-semibold uppercase">Spanks</span>
+          </button>
+        `;
+        feed.appendChild(card);
+      });
+    }
+
+    // Spank (Upvote) Action
+    function spankNote(id) {
+      const note = notes.find(n => n.id === id);
+      if (note) {
+        note.spanks++;
+        renderNotes();
+      }
+    }
+
+    // Filter by Category
+    function filterCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        if (btn.innerText.includes(cat)) {
+          btn.className = "filter-btn bg-rose-600 text-white px-4 py-1.5 rounded-full text-xs font-semibold";
+        } else {
+          btn.className = "filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-1.5 rounded-full text-xs font-semibold";
+        }
+      });
+      renderNotes();
+    }
+
+    // Modal Controls
+    function openModal() {
+      document.getElementById("noteModal").classList.remove("hidden");
+      document.getElementById("noteModal").classList.add("flex");
+    }
+
+    function closeModal() {
+      document.getElementById("noteModal").classList.add("hidden");
+      document.getElementById("noteModal").classList.remove("flex");
+    }
+
+    // Handle Form Submit
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      
+      const newNote = {
+        id: Date.now(),
+        recipient: document.getElementById("recipientName").value,
+        category: document.getElementById("recipientCategory").value,
+        method: document.getElementById("sendMethod").value,
+        message: document.getElementById("noteText").value,
+        spanks: 1,
+        author: "Anonymous"
+      };
+
+      notes.unshift(newNote);
+      renderNotes();
+      closeModal();
+      document.getElementById("noteForm").reset();
+    }
+
+    // Initial render on load
+    renderNotes();
+  </script>
+</body>
+</html>
